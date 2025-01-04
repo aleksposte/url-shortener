@@ -2,7 +2,10 @@ package sqlite
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"net/smtp"
+	"url-shortener/internal/storage"
 
 	"github.com/mattn/go-sqlite3"
 )
@@ -60,4 +63,25 @@ func (s *Storage) SaveURL(urlToSave string, alias string) (int64, error) {
 	}
 
 	return id, nil
+}
+
+func (s *Storage) GetURL(alias string) (string, error) {
+	const operation = "storage.sqlite.GetURL"
+
+	smtp, err := s.db.Prepare("SELECT url FROM url WHERE alias = ?")
+	if err != nil {
+		return "", fmt.Errorf("%s: %w", operation, err)
+	}
+
+	var resUrl string
+	err = smtp.QueryRow(alias).Scan(&resUrl)
+	if errors.Is(err, sql.ErrNoRows) {
+		return "", storage.ErrUrlNotFound
+	}
+	
+	if err != nil {
+		return "", fmt.Errorf("%s: %w", operation, err)
+	}
+
+	return resUrl, err
 }
