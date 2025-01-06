@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"net/smtp"
 	"url-shortener/internal/storage"
 
 	"github.com/mattn/go-sqlite3"
@@ -23,11 +22,11 @@ func New(storagePath string) (*Storage, error) {
 	}
 
 	stmt, err := db.Prepare(`
-	CREATE TABLE IF NOT EXISTS url(
-        id INTEGER PRIMARY KEY,
-        alias TEXT NOT NULL UNIQUE,
-        url TEXT NOT NULL);
-	CREATE INDEX IF NOT EXISTS idx_alias ON url(alias);
+		CREATE TABLE IF NOT EXISTS url(
+			id INTEGER PRIMARY KEY,
+			alias TEXT NOT NULL UNIQUE,
+			url TEXT NOT NULL);
+		CREATE INDEX IF NOT EXISTS idx_alias ON url(alias);
 	`)
 	if err != nil {
 		return nil, fmt.Errorf("#{operation}: #{err}")
@@ -78,7 +77,7 @@ func (s *Storage) GetURL(alias string) (string, error) {
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", storage.ErrUrlNotFound
 	}
-	
+
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", operation, err)
 	}

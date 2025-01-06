@@ -7,6 +7,9 @@ import (
 	"url-shortener/internal/config"
 	"url-shortener/internal/config/lib/logger/sl"
 	"url-shortener/internal/storage/sqlite"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 const (
@@ -16,6 +19,12 @@ const (
 )
 
 func main() {
+	// TODO: init config: cleanenv
+	// TODO: init logger: slog
+	// TODO: init storage: sqlLite
+	// TODO: init router: chigo mod init root
+	//TODO: run server
+
 	os.Setenv("CONFIG_PATH", "./config/local.yaml")
 
 	cfg := config.MustLoad()
@@ -33,11 +42,14 @@ func main() {
 
 	_ = storage
 
-	// TODO: init config: cleanenv
-	// TODO: init logger: slog
-	// TODO: init storage: sqlLite
-	// TODO: init router: chigo mod init root
-	//TODO: run server
+	router := chi.NewRouter()
+	
+	// middleware
+	router.Use(middleware.RequestID)
+	router.Use(middleware.Logger)
+
+	
+	
 }
 
 func setupLogger(env string) *slog.Logger {
