@@ -5,7 +5,6 @@ import (
 	"log/slog"
 	"os"
 	"url-shortener/internal/config"
-	"url-shortener/internal/config/lib/logger/sl"
 	mwLogger "url-shortener/internal/http-server/middleware/logger"
 	"url-shortener/internal/storage/sqlite"
 
@@ -26,7 +25,7 @@ func main() {
 	// TODO: init router: chigo mod init root
 	//TODO: run server
 
-	os.Setenv("CONFIG_PATH", "./config/local.yaml")
+	os.Setenv("CONFIG_PATH", "../config/local.yaml")
 
 	cfg := config.MustLoad()
 	fmt.Println(cfg)
@@ -37,7 +36,7 @@ func main() {
 
 	storage, err := sqlite.New(cfg.StoragePath)
 	if err != nil {
-		log.Error("Failed to init storage", sl.Err(err))
+		log.Error("Failed to init storage", slog.Any("error",err ))
 		os.Exit(1)
 	}
 
